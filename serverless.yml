@@ -75,13 +75,47 @@ functions:
     events:
       - http:
           path: v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}
-          method: get
+          method: post
           request:
             parameters:
               paths:
                 deviceLibraryIdentifier: true
                 passTypeIdentifier: true
                 serialNumber: true
+
+      - http:
+          path: v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}
+          method: delete
+          request:
+            parameters:
+              paths:
+                deviceLibraryIdentifier: true
+                passTypeIdentifier: true
+                serialNumber: true
+
+      - http:
+          path: v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}
+          method: get
+          request:
+            parameters:
+              paths:
+                deviceLibraryIdentifier: true
+                passTypeIdentifier: true
+              querystrings:
+                passesUpdatedSince: true
+
+      - http:
+          path: v1/passes/{passTypeIdentifier}/{serialNumber}
+          method: get
+          request:
+            parameters:
+              paths:
+                passTypeIdentifier: true
+                serialNumber: true
+
+      - http:
+          path: v1/log
+          method: post
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic
