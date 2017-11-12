@@ -74,8 +74,14 @@ functions:
 
     events:
       - http:
-          path: hello
+          path: v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}
           method: get
+          request:
+            parameters:
+              paths:
+                deviceLibraryIdentifier: true
+                passTypeIdentifier: true
+                serialNumber: true
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic
