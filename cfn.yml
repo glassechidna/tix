@@ -1,0 +1,185 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  S3Bucket:
+    Type: String
+  S3Key:
+    Type: String
+  S3ObjectVersion:
+    Type: String
+  NewEmailTopic:
+    Type: String
+
+Resources:
+  NewEmailLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: src/stepTrigger.handler
+      Runtime: nodejs6.10
+      MemorySize: 256
+      Timeout: 15
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref S3Key
+        S3ObjectVersion: !Ref S3ObjectVersion
+      Role: !GetAtt NewEmailRole.Arn
+      Environment:
+        Variables:
+          STEP_MACHINE_ARN: !Ref StepFunction
+  NewEmailSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: lambda
+      TopicArn: !Ref NewEmailTopic
+      Endpoint: !GetAtt NewEmailLambda.Arn
+  NewEmailSnsPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref NewEmailTopic
+      FunctionName: !GetAtt NewEmailLambda.Arn
+  NewEmailRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: AllowStepExecution
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: states:StartExecution
+                Resource: "*"
+  TestLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs6.10
+      MemorySize: 256
+      Timeout: 15
+      Code:
+        ZipFile: |
+          exports.handler = function(event, context, callback) {
+            console.log(JSON.stringify(event));
+            callback(undefined, event);
+          }
+      Role: !GetAtt NewEmailRole.Arn
+  VillageLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs6.10
+      MemorySize: 256
+      Timeout: 15
+      Code:
+        ZipFile: |
+          exports.handler = function(event, context, callback) {
+            console.log(JSON.stringify(event));
+            callback(undefined, {cinema: "village", event: event});
+          }
+      Role: !GetAtt NewEmailRole.Arn
+  HoytsLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs6.10
+      MemorySize: 256
+      Timeout: 15
+      Code:
+        ZipFile: |
+          exports.handler = function(event, context, callback) {
+            console.log(JSON.stringify(event));
+            callback(undefined, {cinema: "hoyts", event: event});            
+          }
+      Role: !GetAtt NewEmailRole.Arn
+  SendReplyLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs6.10
+      MemorySize: 256
+      Timeout: 15
+      Code:
+        ZipFile: |
+          exports.handler = function(event, context, callback) {
+            console.log(JSON.stringify(event));
+            callback(undefined, event);            
+          }
+      Role: !GetAtt NewEmailRole.Arn
+  StepFunction:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      RoleArn: !GetAtt StepFunctionRole.Arn
+      DefinitionString: !Sub |
+          {
+            "Comment": "A test step func",
+            "StartAt": "EmailSourceIdentifier",
+            "States": {
+              "EmailSourceIdentifier": {
+                "Type": "Task",
+                "Resource": "${TestLambda.Arn}",
+                "Next": "EmailSourceChoice"
+              },
+              "EmailSourceChoice": {
+                "Type": "Choice",
+                "Choices": [
+                  {
+                    "Variable": "$.Source",
+                    "StringEquals": "Village",
+                    "Next": "Village"
+                  },
+                  {
+                    "Variable": "$.Source",
+                    "StringEquals": "Hoyts",
+                    "Next": "Hoyts"
+                  }
+                ],
+                "Default": "UnknownSource"
+              },
+              "UnknownSource": {
+                "Type": "Fail",
+                "Cause": "Unrecognised email"
+              },
+              "Village": {
+                "Type": "Task",
+                "Resource": "${VillageLambda.Arn}",
+                "Next": "SendReply"
+              },
+              "Hoyts": {
+                "Type": "Task",
+                "Resource": "${HoytsLambda.Arn}",
+                "Next": "SendReply"
+              },
+              "SendReply": {
+                "Type": "Task",
+                "Resource": "${SendReplyLambda.Arn}",
+                "End": true
+              }
+            }
+          }   
+  StepFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: !Sub states.${AWS::Region}.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: StatesExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: "*"
