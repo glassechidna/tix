@@ -8,3 +8,4 @@ jspm_packages
 /package.zip
 src/*.js
 src/*.js.map
+/.vscode
