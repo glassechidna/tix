@@ -8,6 +8,8 @@ Parameters:
     Type: String
   NewEmailTopic:
     Type: String
+  MailBucket:
+    Type: String
 
 Resources:
   NewEmailLambda:
@@ -58,34 +60,50 @@ Resources:
               - Effect: Allow
                 Action: states:StartExecution
                 Resource: "*"
-  TestLambda:
+  EmailSourceIdentifierLambda:
     Type: AWS::Lambda::Function
     Properties:
-      Handler: index.handler
+      Handler: src/emailSourceIdentifier.handler
       Runtime: nodejs6.10
       MemorySize: 256
       Timeout: 15
       Code:
-        ZipFile: |
-          exports.handler = function(event, context, callback) {
-            console.log(JSON.stringify(event));
-            callback(undefined, event);
-          }
-      Role: !GetAtt NewEmailRole.Arn
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref S3Key
+        S3ObjectVersion: !Ref S3ObjectVersion
+      Role: !GetAtt EmailSourceIdentifierRole.Arn
+  EmailSourceIdentifierRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: AllowMailRetrieval
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub arn:aws:s3:::${MailBucket}/*
   VillageLambda:
     Type: AWS::Lambda::Function
     Properties:
-      Handler: index.handler
+      Handler: src/village.handler
       Runtime: nodejs6.10
       MemorySize: 256
       Timeout: 15
       Code:
-        ZipFile: |
-          exports.handler = function(event, context, callback) {
-            console.log(JSON.stringify(event));
-            callback(undefined, {cinema: "village", event: event});
-          }
-      Role: !GetAtt NewEmailRole.Arn
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref S3Key
+        S3ObjectVersion: !Ref S3ObjectVersion
+      Role: !GetAtt SendReplyRole.Arn
   HoytsLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -103,17 +121,35 @@ Resources:
   SendReplyLambda:
     Type: AWS::Lambda::Function
     Properties:
-      Handler: index.handler
+      Handler: src/sendReply.handler
       Runtime: nodejs6.10
       MemorySize: 256
       Timeout: 15
       Code:
-        ZipFile: |
-          exports.handler = function(event, context, callback) {
-            console.log(JSON.stringify(event));
-            callback(undefined, event);            
-          }
-      Role: !GetAtt NewEmailRole.Arn
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref S3Key
+        S3ObjectVersion: !Ref S3ObjectVersion
+      Role: !GetAtt SendReplyRole.Arn
+  SendReplyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: AllowMailSendig
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: ses:SendEmail
+                Resource: "*"
   StepFunction:
     Type: AWS::StepFunctions::StateMachine
     Properties:
@@ -125,7 +161,7 @@ Resources:
             "States": {
               "EmailSourceIdentifier": {
                 "Type": "Task",
-                "Resource": "${TestLambda.Arn}",
+                "Resource": "${EmailSourceIdentifierLambda.Arn}",
                 "Next": "EmailSourceChoice"
               },
               "EmailSourceChoice": {
