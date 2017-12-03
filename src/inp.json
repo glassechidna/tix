@@ -1,0 +1,158 @@
+{
+  "Id": "00008",
+  "Ses": {
+    "notificationType": "Received",
+    "mail": {
+      "timestamp": "2017-12-03T01:33:54.720Z",
+      "source": "aidan@awsteele.com",
+      "messageId": "gr6n1kkiekl1n7q5uechvlq7fufc4lsui1qufm81",
+      "destination": [
+        "beta@tix.ge.cx"
+      ],
+      "headersTruncated": false,
+      "headers": [
+        {
+          "name": "Return-Path",
+          "value": "<aidan@awsteele.com>"
+        },
+        {
+          "name": "Received",
+          "value": "from mail-pl0-f52.google.com (mail-pl0-f52.google.com [209.85.160.52]) by inbound-smtp.us-east-1.amazonaws.com with SMTP id gr6n1kkiekl1n7q5uechvlq7fufc4lsui1qufm81 for beta@tix.ge.cx; Sun, 03 Dec 2017 01:33:54 +0000 (UTC)"
+        },
+        {
+          "name": "X-SES-Spam-Verdict",
+          "value": "PASS"
+        },
+        {
+          "name": "X-SES-Virus-Verdict",
+          "value": "PASS"
+        },
+        {
+          "name": "Received-SPF",
+          "value": "pass (spfCheck: domain of awsteele.com designates 209.85.160.52 as permitted sender) client-ip=209.85.160.52; envelope-from=aidan@awsteele.com; helo=mail-pl0-f52.google.com;"
+        },
+        {
+          "name": "Authentication-Results",
+          "value": "amazonses.com; spf=pass (spfCheck: domain of awsteele.com designates 209.85.160.52 as permitted sender) client-ip=209.85.160.52; envelope-from=aidan@awsteele.com; helo=mail-pl0-f52.google.com; dkim=pass header.i=@awsteele-com.20150623.gappssmtp.com;"
+        },
+        {
+          "name": "X-SES-RECEIPT",
+          "value": "AEFBQUFBQUFBQUFIR3ZqNzVpZnBJeFhmR1c2bW41cndCc2U4SUdjWk5CSk1ITEdSME4vZlBGOGowcjlyZWNTUWdWaVNKQXJvSGdEcE1YMUlPZlBqLzliUC84QjRKQmhJalpkZHB2YWZSMWtxdTBEdGM3dWZNYmZBWmhuUHhmMXZMekp0YVZTNGdpa2k3K1hjenRrMFFFWWtibnYyYmpwNHhaWjNVOUpHYzR5ejNTdEg1OTZ1bGV2VnkyM3RvN0ZqOWZQVGNZbjZ0bFpZdjNSTjhSMU4yaUZIT0Q1WTV0alUwN3JlaFN0cWdydkY0eU9UMExxcVV5YmZZZlZ4eGJkWHZZSlBQM0hSRCtUTWgrcDVpVjlnS2Z4VWtBRUFWSjV0UG5iRWxac01RYzRJaS82MjJBbVBPdnc9PQ=="
+        },
+        {
+          "name": "X-SES-DKIM-SIGNATURE",
+          "value": "a=rsa-sha256; q=dns/txt; b=U0CZmJmVeL6S9LwcIa10Zw2ZuH2aVaMlIph9xYVqwpjy9tM6XSnrnDBwW4F1RnJrAhiHjiSPNxUle4HKEwHPcqdKdqju8Z/o7hJoY3BaFer63rmp7iYglbVs+x4WFSOuQprlAKcodxxjibt8MluNt8UC+aY6038JQioCAev/ue4=; c=relaxed/simple; s=224i4yxa5dv7c2xz3womw6peuasteono; d=amazonses.com; t=1512264836; v=1; bh=X8dWbAjVdoMZK4GbHbfQoOWI8LhN7Eh6siCgw4+JqAI=; h=From:To:Cc:Bcc:Subject:Date:Message-ID:MIME-Version:Content-Type:X-SES-RECEIPT;"
+        },
+        {
+          "name": "Received",
+          "value": "by mail-pl0-f52.google.com with SMTP id bi12so8400265plb.6 for <beta@tix.ge.cx>; Sat, 02 Dec 2017 17:33:54 -0800 (PST)"
+        },
+        {
+          "name": "DKIM-Signature",
+          "value": "v=1; a=rsa-sha256; c=relaxed/relaxed; d=awsteele-com.20150623.gappssmtp.com; s=20150623; h=from:mime-version:subject:message-id:references:to:date; bh=DIR3W2M3i5GsFam0ZcTV7Jtiu4LNRwQHjDMvAX5Ud8A=; b=JG5b0i6va1Jti3MPAi3QtqH1y6O1YOF8UdEo5szI1J+MI3cWBo/yNr8V/tOWhgIwlzZV8CUtg9NmLZ4EvLtsxgrb2NTFpcW4EjgGtnz5rOBpOqjFHwEwKtYiUKhwfJvcbW3oJ/VV6HQ7Nk34vHSj3E5BTlRllEr5MEfnx56xEG3PH4M5PNW9vqMEgIK+bMZu86frvtV6CLL44xx7X+v1NgEMLrW8sW2IyqmH0kKRTPhwBYTdo9UppbG2twnaVgBtfsgIuWldFH00AcbdCfsA880WCoKxeY8dwj30rzU/Tx13h73EX/gkOFzrLmI2hXRjj16C481Gbl+8jGVlmal6eA=="
+        },
+        {
+          "name": "X-Google-DKIM-Signature",
+          "value": "v=1; a=rsa-sha256; c=relaxed/relaxed; d=1e100.net; s=20161025; h=x-gm-message-state:from:mime-version:subject:message-id:references :to:date; bh=DIR3W2M3i5GsFam0ZcTV7Jtiu4LNRwQHjDMvAX5Ud8A=; b=be+PpghcDUoUrDsQCb4bVbaHACOxe1GI+ENQK4aaKf8ij2A6l6KwarpCOkfGO5zL2k f/7yPcQvnR2Iv+ikFOEVLAX7T7D3INAFfmcwdM6x/Q/CJVxfSjaYUH67u2p4sEc7nJiM ox86KH8uYPx7HiJUWjtGN1MwTteljvTHcxEW1AJc9sBzbifNbqxfeotNErGhy3IIcVdj pvvKCt4dh5/ETZ6IYhPvSyorzMYwcKDdHA4pfqq9RpWY/NHODK8axovR+AG8PeOiLEtX m+1qE3IwAAdZ8dNqV2a5l7wRBDsXWXb+W6oCDLQ0XzzaN5Ipm95hcF+U3aMth+V0svbX 1hhQ=="
+        },
+        {
+          "name": "X-Gm-Message-State",
+          "value": "AJaThX4te0rU/+vXu366E1pQcCfVUrdrcfwN+3XhFx0KoEZyT8XYXIF+ m/ykVyHZOcL29vMt285kR51t71d5P8I="
+        },
+        {
+          "name": "X-Google-Smtp-Source",
+          "value": "AGs4zMayvjaXs+4GrZ5NGbwNmiXEExvg4Aw7DeCB9cdKhjAsvg5sRFMpWMbq+BA26boa5s5RL75ZZQ=="
+        },
+        {
+          "name": "X-Received",
+          "value": "by 10.84.224.206 with SMTP id k14mr10506295pln.403.1512264830879; Sat, 02 Dec 2017 17:33:50 -0800 (PST)"
+        },
+        {
+          "name": "Return-Path",
+          "value": "<aidan@awsteele.com>"
+        },
+        {
+          "name": "Received",
+          "value": "from [10.1.41.242] ([199.36.244.14]) by smtp.gmail.com with ESMTPSA id y131sm18035885pfg.125.2017.12.02.17.33.48 for <beta@tix.ge.cx> (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128); Sat, 02 Dec 2017 17:33:49 -0800 (PST)"
+        },
+        {
+          "name": "From",
+          "value": "Aidan Steele <aidan@awsteele.com>"
+        },
+        {
+          "name": "Content-Type",
+          "value": "multipart/alternative; boundary=\"Apple-Mail=_C3889CC6-7CA8-4D74-9569-21EDBA793862\""
+        },
+        {
+          "name": "Mime-Version",
+          "value": "1.0 (Mac OS X Mail 11.1 \\(3445.4.7\\))"
+        },
+        {
+          "name": "Subject",
+          "value": "Fwd: Your HOYTS Purchase Confirmation"
+        },
+        {
+          "name": "Message-Id",
+          "value": "<CA78D320-1CBE-4478-AB67-ADE561716721@awsteele.com>"
+        },
+        {
+          "name": "References",
+          "value": "<E35A6279-7C89-4EC0-BB3D-F508C2432465@awsteele.com>"
+        },
+        {
+          "name": "To",
+          "value": "beta@tix.ge.cx"
+        },
+        {
+          "name": "Date",
+          "value": "Sat, 2 Dec 2017 17:33:48 -0800"
+        },
+        {
+          "name": "X-Mailer",
+          "value": "Apple Mail (2.3445.4.7)"
+        }
+      ],
+      "commonHeaders": {
+        "returnPath": "aidan@awsteele.com",
+        "from": [
+          "Aidan Steele <aidan@awsteele.com>"
+        ],
+        "date": "Sat, 2 Dec 2017 17:33:48 -0800",
+        "to": [
+          "beta@tix.ge.cx"
+        ],
+        "messageId": "<CA78D320-1CBE-4478-AB67-ADE561716721@awsteele.com>",
+        "subject": "Fwd: Your HOYTS Purchase Confirmation"
+      }
+    },
+    "receipt": {
+      "timestamp": "2017-12-03T01:33:54.720Z",
+      "processingTimeMillis": 1859,
+      "recipients": [
+        "beta@tix.ge.cx"
+      ],
+      "spamVerdict": {
+        "status": "PASS"
+      },
+      "virusVerdict": {
+        "status": "PASS"
+      },
+      "spfVerdict": {
+        "status": "PASS"
+      },
+      "dkimVerdict": {
+        "status": "GRAY"
+      },
+      "dmarcVerdict": {
+        "status": "GRAY"
+      },
+      "action": {
+        "type": "S3",
+        "topicArn": "arn:aws:sns:us-east-1:830921409964:ge-tix-inbound-dev",
+        "bucketName": "ge-tix-inbound-dev",
+        "objectKeyPrefix": "",
+        "objectKey": "gr6n1kkiekl1n7q5uechvlq7fufc4lsui1qufm81"
+      }
+    }
+  }
+}

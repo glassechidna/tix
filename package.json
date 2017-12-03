@@ -10,13 +10,17 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.161.0",
+    "mailparser": "^2.1.0",
     "node-forge": "^0.7.1",
+    "nodemailer": "^4.4.0",
     "uuid": "^3.1.0",
     "yazl": "^2.4.3"
   },
   "devDependencies": {
     "@types/aws-lambda": "0.0.20",
+    "@types/mailparser": "^2.0.2",
     "@types/node": "^8.0.51",
+    "@types/nodemailer": "^4.3.1",
     "@types/uuid": "^3.4.3",
     "package-size-analyzer": "^2.1.1",
     "ts-node": "^3.3.0",

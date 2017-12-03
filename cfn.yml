@@ -10,8 +10,14 @@ Parameters:
     Type: String
   MailBucket:
     Type: String
-
 Resources:
+  PkpassBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 90
+            Status: Enabled
   NewEmailLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -95,7 +101,7 @@ Resources:
   VillageLambda:
     Type: AWS::Lambda::Function
     Properties:
-      Handler: src/village.handler
+      Handler: src/cinemas.village
       Runtime: nodejs6.10
       MemorySize: 256
       Timeout: 15
@@ -103,21 +109,74 @@ Resources:
         S3Bucket: !Ref S3Bucket
         S3Key: !Ref S3Key
         S3ObjectVersion: !Ref S3ObjectVersion
-      Role: !GetAtt SendReplyRole.Arn
+      Role: !GetAtt CinemaRole.Arn
   HoytsLambda:
     Type: AWS::Lambda::Function
     Properties:
-      Handler: index.handler
+      Handler: src/cinemas.hoyts
       Runtime: nodejs6.10
       MemorySize: 256
       Timeout: 15
       Code:
-        ZipFile: |
-          exports.handler = function(event, context, callback) {
-            console.log(JSON.stringify(event));
-            callback(undefined, {cinema: "hoyts", event: event});            
-          }
-      Role: !GetAtt NewEmailRole.Arn
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref S3Key
+        S3ObjectVersion: !Ref S3ObjectVersion
+      Role: !GetAtt CinemaRole.Arn
+  CinemaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: AllowMailRetrieval
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub arn:aws:s3:::${MailBucket}/*
+  PkpassLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: src/pkpass.handler
+      Runtime: nodejs6.10
+      MemorySize: 256
+      Timeout: 60
+      Environment:
+        Variables:
+          OUTPUT_BUCKET: !Ref PkpassBucket
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref S3Key
+        S3ObjectVersion: !Ref S3ObjectVersion
+      Role: !GetAtt PkpassRole.Arn
+  PkpassRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: AllowS3Put
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub arn:aws:s3:::${PkpassBucket}/*
   SendReplyLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -143,13 +202,20 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
-        - PolicyName: AllowMailSendig
+        - PolicyName: AllowMailSending
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
               - Effect: Allow
-                Action: ses:SendEmail
+                Action: ses:SendRawEmail
                 Resource: "*"
+        - PolicyName: AllowS3Get
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub arn:aws:s3:::${PkpassBucket}/*
   StepFunction:
     Type: AWS::StepFunctions::StateMachine
     Properties:
@@ -187,11 +253,16 @@ Resources:
               "Village": {
                 "Type": "Task",
                 "Resource": "${VillageLambda.Arn}",
-                "Next": "SendReply"
+                "Next": "Pkpass"
               },
               "Hoyts": {
                 "Type": "Task",
                 "Resource": "${HoytsLambda.Arn}",
+                "Next": "Pkpass"
+              },
+              "Pkpass": {
+                "Type": "Task",
+                "Resource": "${PkpassLambda.Arn}",
                 "Next": "SendReply"
               },
               "SendReply": {

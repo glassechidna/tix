@@ -9,7 +9,9 @@ done;
 rm -rf .tmp/node_modules/aws-sdk/dist
 rm -rf .tmp/node_modules/aws-sdk/**/*.d.ts
 npx tsc
-cp -rf src .tmp/
+mkdir .tmp/src .tmp/assets
+cp -rf dist/* .tmp/src/
+cp -rf assets/* .tmp/assets
 (cd .tmp && zip -r ../package.zip .)
 
 S3_BUCKET=tix-dev-serverlessdeploymentbucket-1q3d6t573tfkn

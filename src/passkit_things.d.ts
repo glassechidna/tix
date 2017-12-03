@@ -18,15 +18,15 @@ interface PassJson {
     voided?: boolean;
 
     beacons?: [Beacon];
-    locations?: [Location];
+    locations?: [PasskitLocation];
     maxDistance?: number;
     relevantDate?: string;
 
-    boardingPass?: any;
-    coupon?: any;
-    eventTicket?: any;
-    generic?: any;
-    storeCard?: any;
+    boardingPass?: PassStructure;
+    coupon?: PassStructure;
+    eventTicket?: PassStructure;
+    generic?: PassStructure;
+    storeCard?: PassStructure;
 
     barcodes?: [Barcode];
     backgroundColor?: string;
@@ -78,7 +78,7 @@ interface Beacon {
     relevantText?: string;
 }
 
-interface Location {
+interface PasskitLocation {
     altitude?: number;
     latitude: number;
     longitude: number;
